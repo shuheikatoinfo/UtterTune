@@ -1,10 +1,10 @@
 # 🎛️ UtterTune
 **LoRA-based phoneme-level pronunciation and prosody control for LLM-based TTS with no G2P** (currently supports **Japanese** in **[CosyVoice 2](https://github.com/FunAudioLLM/CosyVoice)**)
 
-[![arXiv](https://img.shields.io/badge/arXiv-2501.xxxxx-b31b1b.svg)](https://arxiv.org/abs/2501.xxxxx)
-[![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97-HuggingFace-yellow)](https://huggingface.co/your-username/UtterTune)
-[![Static Demo](https://img.shields.io/badge/Demo-GitHub%20Pages-blue)](https://your-username.github.io/UtterTune)
-[![Interactive Demo](https://img.shields.io/badge/Demo-Gradio-orange)](https://gradio.app/g/your-username/UtterTune)
+<!-- [![arXiv](https://img.shields.io/badge/arXiv-2501.xxxxx-b31b1b.svg)](https://arxiv.org/abs/2501.xxxxx) -->
+[![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97-HuggingFace-yellow)](https://huggingface.co/shuheikatoinfo/UtterTune-CosyVoice2-ja-JSUTJVS)
+<!-- [![Static Demo](https://img.shields.io/badge/Demo-GitHub%20Pages-blue)](https://shuheikatoinfo.github.io/UtterTune) -->
+<!-- [![Interactive Demo](https://img.shields.io/badge/Demo-Gradio-orange)](https://gradio.app/g/your-username/UtterTune) -->
 
 ## 📜 The Story
 Have you ever **struggled with correcting pronunciation errors** in text-to-speech (TTS) based on a large language model (LLM) architecture due to a **lack of an explicit grapheme-to-phoneme (G2P) module**? Don't we have a way to control pronunciation, **including prosody**, in such a case?
@@ -29,14 +29,13 @@ UtterTune doesn't need full fine-tuning for the base model’s LLM component.
 Because you only need LoRA for the target language.
 
 ### Pretrained LoRA weights are available
-On Hugging Face (*non-commercial license* due to the training data).
+[You can download pretrained weights from Hugging Face](https://huggingface.co/shuheikatoinfo/UtterTune-CosyVoice2-ja-JSUTJVS) (*non-commercial license* due to the training data).
 
-
-## 🎮️ Resources
-[![arXiv](https://img.shields.io/badge/arXiv-2501.xxxxx-b31b1b.svg)](https://arxiv.org/abs/2501.xxxxx)
-[![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97-HuggingFace-yellow)](https://huggingface.co/your-username/UtterTune)
-[![Static Demo](https://img.shields.io/badge/Demo-GitHub%20Pages-blue)](https://your-username.github.io/UtterTune)
-[![Interactive Demo](https://img.shields.io/badge/Demo-Gradio-orange)](https://gradio.app/g/your-username/UtterTune)
+## 🛢️ Resources
+<!-- [![arXiv](https://img.shields.io/badge/arXiv-2501.xxxxx-b31b1b.svg)](https://arxiv.org/abs/2501.xxxxx) -->
+[![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97-HuggingFace-yellow)](https://huggingface.co/shuheikatoinfo/UtterTune-CosyVoice2-ja-JSUTJVS)
+<!-- [![Static Demo](https://img.shields.io/badge/Demo-GitHub%20Pages-blue)](https://your-username.github.io/UtterTune) -->
+<!-- [![Interactive Demo](https://img.shields.io/badge/Demo-Gradio-orange)](https://gradio.app/g/your-username/UtterTune) -->
 
 ## 💨 Quick Start
 
@@ -53,15 +52,19 @@ git submodule update --init --recursive
 git submodule update --init --recursive
 ```
 
-### Download pretrained models
+### 2. Download pretrained models
 ```bash
 mkdir -p pretrained_models
 
 # Download CosyVoice2-0.5B
 git clone https://www.modelscope.cn/iic/CosyVoice2-0.5B.git pretrained_models/CosyVoice2-0.5B
+
+# Download LoRA weights
+git lfs install
+git clone https://huggingface.co/shuheikatoinfo/UtterTune-CosyVoice2-ja-JSUTJVS lora_weights/UtterTune-CosyVoice2-ja-JSUTJVS
 ```
 
-### Setup a virtual environment
+### 3. Setup a virtual environment
 ```bash
 # For CosyVoice 2
 python -m venv venvs/cv2. # 3.10
@@ -86,3 +89,22 @@ sudo apt-get install sox libsox-dev
 sudo yum install sox sox-devel
 ```
 
+### 4. Inference
+```bash
+python -m scripts.cv2.infer \
+    --base_model pretrained_models/CosyVoice2-0.5B \
+    --lora_dir lora_weights/UtterTune-CosyVoice2-jp-JSUTJVS \
+    --texts "魑魅魍魎が跋扈する。|<PHON_START>チ'ミ/モーリョー<PHON_END>が<PHON_START>バ'ッコ<PHON_END>する。" \
+    --prompt_wav prompts/wav/common_voice_ja_41758953.wav \
+    --prompt_text prompts/trans/common_voice_ja_41758953.txt
+```
+
+## 💪 Training
+
+### 1. Data preparation
+Download [JSUT](https://sites.google.com/site/shinnosuketakamichi/publication/jsut) and [JVS](https://sites.google.com/site/shinnosuketakamichi/research-topics/jvs_corpus) corpora, and use `extract_speech_tokens.py` and `prepare_manifest.py` in `scripts/cv2`.
+
+### 2. Train
+```bash
+python -m scripts.cv2.train --config configs/train/jsutjvs.yaml
+```

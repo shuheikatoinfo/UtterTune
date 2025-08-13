@@ -130,7 +130,9 @@ def main():
 
         # Register new special tokens
         new_tokens = ["<PHON_START>", "<PHON_END>"]
-        added = tok.tokenizer.add_special_tokens({"additional_special_tokens": new_tokens})
+        added = tok.tokenizer.add_special_tokens(
+            {"additional_special_tokens": new_tokens}
+        )
         logger.info("Number of tokens added: %s", added)
 
         # Update the meta information on the QwenTokenizer
