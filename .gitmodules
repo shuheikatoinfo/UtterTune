@@ -1,0 +1,4 @@
+[submodule "submodules/CosyVoice"]
+	path = submodules/CosyVoice
+	url = git@github.com:FunAudioLLM/CosyVoice.git
+	branch = main

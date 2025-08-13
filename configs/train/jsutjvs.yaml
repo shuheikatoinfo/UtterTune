@@ -1,0 +1,33 @@
+---
+manifest: data/manifests/all.tsv
+base_model: pretrained_models/CosyVoice2-0.5B
+val_ratio: 0.05
+lora:
+  rank: 16
+  alpha: 64
+  dropout: 0.05
+  bias: none
+  target_modules:
+    - q_proj
+    - k_proj
+    - v_proj
+    - o_proj
+training:
+  output_dir: experiments/cv2/jsutjvs
+  per_device_train_batch_size: 8
+  per_device_eval_batch_size: 8
+  seed: 42
+  eval_strategy: steps
+  eval_steps: 1000
+  save_steps: 1000
+  max_steps: 20000
+  learning_rate: 1e-4
+  adam_beta1: 0.9
+  adam_beta2: 0.98
+  warmup_ratio: 0.05
+  lr_scheduler_type: cosine
+  max_grad_norm: 1.0
+  fp16: True
+  logging_steps: 50
+  logging_dir: "${.output_dir}/tb"
+  report_to: tensorboard
