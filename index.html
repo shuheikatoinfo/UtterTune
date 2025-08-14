@@ -139,7 +139,7 @@
     </div>
   </section>
 
-  <!-- DEMOS -->
+  <!-- DEMOS
   <section id="demos" class="bg-slate-50 dark:bg-slate-900/40 py-8">
     <div class="mx-auto max-w-7xl px-6">
       <h2 class="text-2xl sm:text-3xl font-bold">🎧 Audio Demos (Zero-Shot Cloning)</h2>
@@ -174,6 +174,226 @@
         </div>
       </div>
     </div>
+  </section> -->
+  <!-- DEMOS -->
+  <section id="demos" class="bg-slate-50 dark:bg-slate-900/40 py-8">
+    <div class="mx-auto max-w-7xl px-6">
+      <h2 class="text-2xl sm:text-3xl font-bold">🎧 Audio Demos (Zero-Shot Cloning)</h2>
+      
+      <div class="mt-8 grid gap-6 md:grid-cols-2">
+        <p><strong>Baseline</strong> refers to the original CosyVoice 2. <strong>Baseline (kana input)</strong> refers to the original CosyVoice 2 and kana (phonogram) input for difficult-to-read words.</p>
+
+        <!-- Sentence 1 -->
+        <div class="rounded-2xl border p-6 dark:border-slate-800/80" id="sentence1">
+          <div class="flex items-center justify-between gap-3">
+            <h3 class="font-semibold">Sentence 1</h3>
+            <div class="flex gap-2">
+              <button class="ab-btn rounded-lg border px-3 py-1.5 text-sm" data-key="base">
+                Baseline
+              </button>
+              <button class="ab-btn rounded-lg border px-3 py-1.5 text-sm" data-key="base_kana">
+                Baseline (kana input)
+              </button>
+              <button class="ab-btn rounded-lg border px-3 py-1.5 text-sm" data-key="uttertune">
+                UtterTune
+              </button>
+              <button class="ab-btn rounded-lg border px-3 py-1.5 text-sm" data-key="prompt">
+                Prompt
+              </button>
+            </div>
+          </div>
+
+          <p class="mt-3 text-slate-600 dark:text-slate-300">
+            <span class="font-medium">Input:</span>
+            <code class="inline-block px-1.5 py-0.5 bg-slate-100 dark:bg-slate-900 rounded" data-role="inputText"></code>
+          </p>
+
+          <p class="mt-1 text-sm" data-role="note"></p>
+
+          <audio controls class="mt-3 w-full" aria-label="Demo player" data-role="player">
+            <source src="" type="audio/wav" />
+          </audio>
+        </div>
+
+        <!-- Sentence 2 -->
+        <div class="rounded-2xl border p-6 dark:border-slate-800/80" id="sentence2">
+          <div class="flex items-center justify-between gap-3">
+            <h3 class="font-semibold">Sentence 2</h3>
+            <div class="flex gap-2">
+              <button class="ab-btn rounded-lg border px-3 py-1.5 text-sm" data-key="base">
+                Baseline
+              </button>
+              <button class="ab-btn rounded-lg border px-3 py-1.5 text-sm" data-key="uttertune">
+                UtterTune
+              </button>
+              <button class="ab-btn rounded-lg border px-3 py-1.5 text-sm" data-key="prompt">
+                Prompt
+              </button>
+            </div>
+          </div>
+
+          <p class="mt-3 text-slate-600 dark:text-slate-300">
+            <span class="font-medium">Input:</span>
+            <code class="inline-block px-1.5 py-0.5 bg-slate-100 dark:bg-slate-900 rounded" data-role="inputText"></code>
+          </p>
+
+          <p class="mt-1 text-sm" data-role="note"></p>
+
+          <audio controls class="mt-3 w-full" aria-label="Demo player" data-role="player">
+            <source src="" type="audio/wav" />
+          </audio>
+        </div>
+
+        <!-- Sentence 3 -->
+        <div class="rounded-2xl border p-6 dark:border-slate-800/80" id="sentence3">
+          <div class="flex items-center justify-between gap-3">
+            <h3 class="font-semibold">Sentence 3</h3>
+            <div class="flex gap-2">
+              <button class="ab-btn rounded-lg border px-3 py-1.5 text-sm" data-key="base">
+                Baseline
+              </button>
+              <button class="ab-btn rounded-lg border px-3 py-1.5 text-sm" data-key="base_kana">
+                Baseline (kana input)
+              </button>
+              <button class="ab-btn rounded-lg border px-3 py-1.5 text-sm" data-key="uttertune">
+                UtterTune
+              </button>
+              <button class="ab-btn rounded-lg border px-3 py-1.5 text-sm" data-key="prompt">
+                Prompt
+              </button>
+            </div>
+          </div>
+
+          <p class="mt-3 text-slate-600 dark:text-slate-300">
+            <span class="font-medium">Input:</span>
+            <code class="inline-block px-1.5 py-0.5 bg-slate-100 dark:bg-slate-900 rounded" data-role="inputText"></code>
+          </p>
+
+          <p class="mt-1 text-sm" data-role="note"></p>
+
+          <audio controls class="mt-3 w-full" aria-label="Demo player" data-role="player">
+            <source src="" type="audio/wav" />
+          </audio>
+        </div>
+      </div>
+    </div>
+
+    <!-- A/B player initialization -->
+    <script>
+      function initABPlayer(containerId, clips, initialKey) {
+        const root = document.getElementById(containerId);
+        const buttons = root.querySelectorAll('.ab-btn');
+        const player = root.querySelector('[data-role="player"]');
+        const inputTextEl = root.querySelector('[data-role="inputText"]');
+        const noteEl = root.querySelector('[data-role="note"]');
+
+        function setActive(which) {
+          const c = clips[which];
+          inputTextEl.innerText = c.text;
+          noteEl.textContent = c.note || '';
+          noteEl.className = `mt-1 text-sm ${c.noteClass || ''}`;
+          player.src = c.audio;
+          player.play().catch(() => {/* prevent automatic playback blocking before user operation */});
+
+          buttons.forEach(b => {
+            b.className = 'ab-btn rounded-lg border px-3 py-1.5 text-sm';
+            if (b.dataset.key === which) {
+              b.className += ` ${c.btnClass || ''}`;
+            }
+          });
+        }
+
+        buttons.forEach(b => b.addEventListener('click', () => setActive(b.dataset.key)));
+        setActive(initialKey);
+      }
+
+      // Sentence 1
+      initABPlayer('sentence1', {
+        base: {
+          audio: 'assets/audio/001_cv2_base.wav',
+          text: '魑魅魍魎が跋扈する。',
+          note: 'Incorrect reading',
+          noteClass: 'text-red-500',
+          btnClass: 'bg-blue-400 text-black border-blue-400'
+        },
+        base_kana: {
+          audio: 'assets/audio/001_cv2_base_kana.wav',
+          text: 'チミモーリョーがバッコする。',
+          note: 'Poor prosody',
+          noteClass: 'text-yellow-500',
+          btnClass: 'bg-blue-400 text-black border-blue-400'
+        },
+        uttertune: {
+          audio: 'assets/audio/001_cv2_uttertune.wav',
+          text: "<PHON_START>チ'ミ/モーリョー<PHON_END>が<PHON_START>バ'ッコ<PHON_END>する。",
+          note: 'Quite natural',
+          noteClass: 'text-cyan-500',
+          btnClass: 'bg-cyan-500 text-black border-cyan-500'
+        },
+        prompt: {
+          audio: 'assets/audio/common_voice_ja_41758953.wav',
+          text: "メロスは激怒した。",
+          note: 'Prompt audio',
+          noteClass: '',
+          btnClass: 'bg-slate-700 text-white border-slate-700'
+        }
+      }, 'base');
+      // Sentence 2
+      initABPlayer('sentence2', {
+        base: {
+          audio: 'assets/audio/002_cv2_base.wav',
+          text: '午後に甘いレモンティーを友達と静かに味わった。',
+          note: 'Poor prosody',
+          noteClass: 'text-yellow-500',
+          btnClass: 'bg-blue-400 text-black border-blue-400'
+        },
+        uttertune: {
+          audio: 'assets/audio/002_cv2_uttertune.wav',
+          text: "午後に甘い<PHON_START>レモ'ンティー<PHON_END>を友達と静かに味わった。",
+          note: 'Quite natural',
+          noteClass: 'text-cyan-500',
+          btnClass: 'bg-cyan-500 text-black border-cyan-500'
+        },
+        prompt: {
+          audio: 'assets/audio/common_voice_ja_36360364.wav',
+          text: "スマートフォンはスマホと略される。",
+          note: 'Prompt audio',
+          noteClass: '',
+          btnClass: 'bg-slate-700 text-white border-slate-700'
+        }
+      }, 'base');
+      // Sentence 3
+      initABPlayer('sentence3', {
+        base: {
+          audio: 'assets/audio/001_cv2_base.wav',
+          text: '朝練で彼は溌剌と声を出し皆を元気づけ、最後まで練習を引っ張った。',
+          note: 'Incorrect reading',
+          noteClass: 'text-red-500',
+          btnClass: 'bg-blue-400 text-black border-blue-400'
+        },
+        base_kana: {
+          audio: 'assets/audio/001_cv2_base_kana.wav',
+          text: '朝練で彼はハツラツと声を出し皆を元気づけ、最後まで練習を引っ張った。',
+          note: 'Poor prosody',
+          noteClass: 'text-yellow-500',
+          btnClass: 'bg-blue-400 text-black border-blue-400'
+        },
+        uttertune: {
+          audio: 'assets/audio/001_cv2_uttertune.wav',
+          text: "朝練で彼は<PHON_START>ハツラツ<PHON_END>と声を出し皆を元気づけ、最後まで練習を引っ張った。",
+          note: 'Quite natural',
+          noteClass: 'text-cyan-500',
+          btnClass: 'bg-cyan-500 text-black border-cyan-500'
+        },
+        prompt: {
+          audio: 'assets/audio/common_voice_ja_41776640.wav',
+          text: "あなたの好きな季節は何ですか？",
+          note: 'Prompt audio',
+          noteClass: '',
+          btnClass: 'bg-slate-700 text-white border-slate-700'
+        }
+      }, 'base');
+    </script>
   </section>
 
   <!-- CITATION -->
