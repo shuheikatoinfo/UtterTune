@@ -109,6 +109,37 @@ Download [JSUT](https://sites.google.com/site/shinnosuketakamichi/publication/js
 python -m scripts.cv2.train --config configs/train/jsutjvs.yaml
 ```
 
+## Input sentences for the sample files
+
+```yaml
+# 001 (prompt: common_voice_ja_41758953)
+# 001_cv2_base.wav (CosyVoice 2)
+魑魅魍魎が跋扈する。
+
+# 001_cv2_base_kana.wav (CosyVoice 2)
+チミモーリョーがバッコする。
+
+# 001_cv2_uttertune.wav (CosyVoice 2 + UtterTune)
+<PHON_START>チ'ミ/モーリョー<PHON_END>が<PHON_START>バ'ッコ<PHON_END>する。
+
+# 002 (prompt: common_voice_ja_36360364)
+# 002_cv2_base.wav (CosyVoice 2)
+午後に甘いレモンティーを友達と静かに味わった。
+
+# 002_cv2_uttertune.wav (CosyVoice 2 + UtterTune)
+午後に甘い<PHON_START>レモ'ンティー<PHON_END>を友達と静かに味わった。
+
+# 003 (prompt: common_voice_ja_41776640)
+# 003_cv2_base.wav (CosyVoice 2)
+朝練で彼は溌剌と声を出し皆を元気づけ、最後まで練習を引っ張った。
+
+# 003_cv2_base_kana.wav (CosyVoice 2)
+朝練で彼はハツラツと声を出し皆を元気づけ、最後まで練習を引っ張った。
+
+# 003_cv2_uttertune.wav (CosyVoice 2 + UtterTune)
+朝練で彼は<PHON_START>ハツラツ<PHON_END>と声を出し皆を元気づけ、最後まで練習を引っ張った。
+```
+
 ## Citation
 If you use UtterTune in your research, please cite the [paper](https://www.arxiv.org/abs/2508.09767):
 ```
