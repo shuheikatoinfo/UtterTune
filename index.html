@@ -17,6 +17,12 @@
   <!-- Favicon placeholders -->
   <link rel="icon" href="./assets/favicon.svg" />
 
+  <!-- Preload audio -->
+  <link rel="preload" as="audio" href="assets/audio/cv2_base.wav">
+  <link rel="preload" as="audio" href="assets/audio/cv2_base_kana.wav">
+  <link rel="preload" as="audio" href="assets/audio/cv2_uttertune.wav">
+  <link rel="preload" as="audio" href="assets/audio/common_voice_ja_41758953.wav">
+
   <!-- Tailwind CSS (Play CDN for simplicity) -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -108,7 +114,7 @@
       <div class="rounded-2xl border p-6 dark:border-slate-800/80">
         <div class="text-2xl">🎛️</div>
         <h3 class="mt-3 font-semibold">Edit & Control Phoneme-Level Pronunciation & Prosody</h3>
-        <p class="mt-2 text-slate-600 dark:text-slate-300">Add controllability to LLM-TTS with no explicit G2P frontend.</p>
+        <p class="mt-2 text-slate-600 dark:text-slate-300">Add controllability to LLM-TTS with no explicit G2P frontend. Objective and subjective evaluations confirm its effectiveness: Accent correctness has been improved from 0.472 (baseline) to <strong>0.975</strong> (UtterTune) while keeping naturalness and speaker similarity.</p>
       </div>
       <div class="rounded-2xl border p-6 dark:border-slate-800/80">
         <div class="text-2xl">⚙️</div>
@@ -118,7 +124,7 @@
       <div class="rounded-2xl border p-6 dark:border-slate-800/80">
         <div class="text-2xl">🚀</div>
         <h3 class="mt-3 font-semibold">Lightweight</h3>
-        <p class="mt-2 text-slate-600 dark:text-slate-300">Tiny adapter weights, fast to download and update.</p>
+        <p class="mt-2 text-slate-600 dark:text-slate-300">Tiny adapter weights, fast to download and update. You can train LoRA on a single Nvidia RTX4090 (24GB memory) within 1 hour.</p>
       </div>
       <div class="rounded-2xl border p-6 dark:border-slate-800/80">
         <div class="text-2xl">🔒</div>
@@ -136,29 +142,29 @@
         <div class="rounded-2xl border p-6 dark:border-slate-800/80">
           <h3 class="font-semibold">Baseline (CosyVoice 2) <span class="text-red-500">incorrect reading</span></h3>
           <p>魑魅魍魎が跋扈する。</p>
-          <audio controls class="mt-3 w-full">
-            <source src="assets/audio/cv2_base.wav" type="audio/mpeg" />
+          <audio controls class="mt-3 w-full" aria-label="Baseline (CosyVoice 2): Incorrect reading">
+            <source src="assets/audio/cv2_base.wav" type="audio/wav" />
           </audio>
         </div>
         <div class="rounded-2xl border p-6 dark:border-slate-800/80">
           <h3 class="font-semibold">Baseline (CosyVoice 2, kana input) <span class="text-yellow-500">poor prosody</span></h3>
           <p>チミモーリョーがバッコする。</p>
-          <audio controls class="mt-3 w-full">
-            <source src="assets/audio/cv2_base_kana.wav" type="audio/mpeg" />
+          <audio controls class="mt-3 w-full" aria-label="Baseline (CosyVoice 2, kana input): Poor prosody">
+            <source src="assets/audio/cv2_base_kana.wav" type="audio/wav" />
           </audio>
         </div>
         <div class="rounded-2xl border p-6 dark:border-slate-800/80">
           <h3 class="font-semibold">UtterTune <span class="text-cyan-500">quite natural</span></h3>
           <p>&lt;PHON_START&gt;チ'ミ/モーリョー&lt;PHON_END&gt;が&lt;PHON_START&gt;バ'ッコ&lt;PHON_END&gt;する。</p>
-          <audio controls class="mt-3 w-full">
-            <source src="assets/audio/cv2_uttertune.wav" type="audio/mpeg" />
+          <audio controls class="mt-3 w-full" aria-label="UtterTune: Quite natural">
+            <source src="assets/audio/cv2_uttertune.wav" type="audio/wav" />
           </audio>
         </div>
         <div class="rounded-2xl border p-6 dark:border-slate-800/80">
           <h3 class="font-semibold">Prompt audio (derived from Common Voice)</h3>
           <p>メロスは激怒した。</p>
-          <audio controls class="mt-3 w-full">
-            <source src="assets/audio/common_voice_ja_41758953.wav" type="audio/mpeg" />
+          <audio controls class="mt-3 w-full" aria-label="Prompt audio (derived from Common Voice)">
+            <source src="assets/audio/common_voice_ja_41758953.wav" type="audio/wav" />
           </audio>
         </div>
       </div>
@@ -169,7 +175,7 @@
   <section id="citation" class="bg-slate-50 dark:bg-slate-900/40 py-8">
     <div class="mx-auto max-w-7xl px-6">
       <h2 class="text-2xl sm:text-3xl font-bold">Citation</h2>
-      <p class="mt-3 text-slate-600 dark:text-slate-300">If you use UtterTune in your research, please cite:</p>
+      <p class="mt-3 text-slate-600 dark:text-slate-300">If you use UtterTune in your research, please cite the <span class="text-cyan-500"><a href="https://www.arxiv.org/abs/2508.09767">paper</a></span></p>
       <pre class="mt-4 rounded-xl bg-slate-100 dark:bg-slate-900 p-4 text-xs overflow-x-auto">@misc{Kato2025UtterTune,
   title={UtterTune: UtterTune: LoRA-Based Target-Language Pronunciation Edit and Control in Multilingual Text-to-Speech},
   author={Kato, Shuhei},
