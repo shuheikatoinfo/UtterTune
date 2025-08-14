@@ -139,42 +139,6 @@
     </div>
   </section>
 
-  <!-- DEMOS
-  <section id="demos" class="bg-slate-50 dark:bg-slate-900/40 py-8">
-    <div class="mx-auto max-w-7xl px-6">
-      <h2 class="text-2xl sm:text-3xl font-bold">🎧 Audio Demos (Zero-Shot Cloning)</h2>
-      <div class="mt-8 grid gap-6 md:grid-cols-2">
-        <div class="rounded-2xl border p-6 dark:border-slate-800/80">
-          <h3 class="font-semibold">Baseline (CosyVoice 2) <span class="text-red-500">incorrect reading</span></h3>
-          <p>魑魅魍魎が跋扈する。</p>
-          <audio controls class="mt-3 w-full" aria-label="Baseline (CosyVoice 2): Incorrect reading">
-            <source src="assets/audio/cv2_base.wav" type="audio/wav" />
-          </audio>
-        </div>
-        <div class="rounded-2xl border p-6 dark:border-slate-800/80">
-          <h3 class="font-semibold">Baseline (CosyVoice 2, kana input) <span class="text-yellow-500">poor prosody</span></h3>
-          <p>チミモーリョーがバッコする。</p>
-          <audio controls class="mt-3 w-full" aria-label="Baseline (CosyVoice 2, kana input): Poor prosody">
-            <source src="assets/audio/cv2_base_kana.wav" type="audio/wav" />
-          </audio>
-        </div>
-        <div class="rounded-2xl border p-6 dark:border-slate-800/80">
-          <h3 class="font-semibold">UtterTune <span class="text-cyan-500">quite natural</span></h3>
-          <p>&lt;PHON_START&gt;チ'ミ/モーリョー&lt;PHON_END&gt;が&lt;PHON_START&gt;バ'ッコ&lt;PHON_END&gt;する。</p>
-          <audio controls class="mt-3 w-full" aria-label="UtterTune: Quite natural">
-            <source src="assets/audio/cv2_uttertune.wav" type="audio/wav" />
-          </audio>
-        </div>
-        <div class="rounded-2xl border p-6 dark:border-slate-800/80">
-          <h3 class="font-semibold">Prompt audio (derived from Common Voice)</h3>
-          <p>メロスは激怒した。</p>
-          <audio controls class="mt-3 w-full" aria-label="Prompt audio (derived from Common Voice)">
-            <source src="assets/audio/common_voice_ja_41758953.wav" type="audio/wav" />
-          </audio>
-        </div>
-      </div>
-    </div>
-  </section> -->
   <!-- DEMOS -->
   <section id="demos" class="bg-slate-50 dark:bg-slate-900/40 py-8">
     <div class="mx-auto max-w-7xl px-6">
@@ -365,21 +329,21 @@
       // Sentence 3
       initABPlayer('sentence3', {
         base: {
-          audio: 'assets/audio/001_cv2_base.wav',
+          audio: 'assets/audio/003_cv2_base.wav',
           text: '朝練で彼は溌剌と声を出し皆を元気づけ、最後まで練習を引っ張った。',
           note: 'Incorrect reading',
           noteClass: 'text-red-500',
           btnClass: 'bg-blue-400 text-black border-blue-400'
         },
         base_kana: {
-          audio: 'assets/audio/001_cv2_base_kana.wav',
+          audio: 'assets/audio/003_cv2_base_kana.wav',
           text: '朝練で彼はハツラツと声を出し皆を元気づけ、最後まで練習を引っ張った。',
           note: 'Poor prosody',
           noteClass: 'text-yellow-500',
           btnClass: 'bg-blue-400 text-black border-blue-400'
         },
         uttertune: {
-          audio: 'assets/audio/001_cv2_uttertune.wav',
+          audio: 'assets/audio/003_cv2_uttertune.wav',
           text: "朝練で彼は<PHON_START>ハツラツ<PHON_END>と声を出し皆を元気づけ、最後まで練習を引っ張った。",
           note: 'Quite natural',
           noteClass: 'text-cyan-500',
