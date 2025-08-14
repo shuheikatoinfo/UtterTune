@@ -102,7 +102,19 @@ python -m scripts.cv2.infer \
 ## 💪 Training
 
 ### 1. Data preparation
-Download [JSUT](https://sites.google.com/site/shinnosuketakamichi/publication/jsut) and [JVS](https://sites.google.com/site/shinnosuketakamichi/research-topics/jvs_corpus) corpora, and use `extract_speech_tokens.py` and `prepare_manifest.py` in `scripts/cv2`.
+Download [JSUT](https://sites.google.com/site/shinnosuketakamichi/publication/jsut) and [JVS](https://sites.google.com/site/shinnosuketakamichi/research-topics/jvs_corpus) corpora, and replace portion of words with its pronunciation `<PHON_START>` and `<PHON_END>` in each transcription like this:
+
+```yaml
+# Original
+BASIC5000_0004:一週間して、そのニュースは本当になった。
+
+# After replacement
+BASIC5000_0004:<PHON_START>イッシュ'ーカン<PHON_END>して、そのニュースは本当になった。
+```
+
+*We plan to provide patch for JSUT and JVS corpora.
+
+Then, use `extract_speech_tokens.py` and `prepare_manifest.py` in `scripts/cv2`.
 
 ### 2. Train
 ```bash
