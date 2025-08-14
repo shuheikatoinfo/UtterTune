@@ -1,7 +1,7 @@
 # 🎛️ UtterTune
 **LoRA-based phoneme-level pronunciation and prosody control for LLM-based TTS with no G2P** (currently supports **Japanese** in **[CosyVoice 2](https://github.com/FunAudioLLM/CosyVoice)**)
 
-<!-- [![arXiv](https://img.shields.io/badge/arXiv-2501.xxxxx-b31b1b.svg)](https://arxiv.org/abs/2501.xxxxx) -->
+[![arXiv](https://img.shields.io/badge/arXiv-2508.09767-b31b1b.svg)](https://www.arxiv.org/abs/2508.09767)
 [![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97-HuggingFace-yellow)](https://huggingface.co/shuheikatoinfo/UtterTune-CosyVoice2-ja-JSUTJVS)
 [![Static Demo](https://img.shields.io/badge/Demo-GitHub%20Pages-blue)](https://shuheikatoinfo.github.io/UtterTune)
 <!-- [![Interactive Demo](https://img.shields.io/badge/Demo-Gradio-orange)](https://gradio.app/g/your-username/UtterTune) -->
@@ -32,7 +32,7 @@ Because you only need LoRA for the target language.
 [You can download pretrained weights from Hugging Face](https://huggingface.co/shuheikatoinfo/UtterTune-CosyVoice2-ja-JSUTJVS) (*non-commercial license* due to the training data).
 
 ## 🛢️ Resources
-<!-- [![arXiv](https://img.shields.io/badge/arXiv-2501.xxxxx-b31b1b.svg)](https://arxiv.org/abs/2501.xxxxx) -->
+[![arXiv](https://img.shields.io/badge/arXiv-2508.09767-b31b1b.svg)](https://www.arxiv.org/abs/2508.09767)
 [![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97-HuggingFace-yellow)](https://huggingface.co/shuheikatoinfo/UtterTune-CosyVoice2-ja-JSUTJVS)
 [![Static Demo](https://img.shields.io/badge/Demo-GitHub%20Pages-blue)](https://shuheikatoinfo.github.io/UtterTune)
 <!-- [![Interactive Demo](https://img.shields.io/badge/Demo-Gradio-orange)](https://gradio.app/g/your-username/UtterTune) -->
@@ -107,4 +107,15 @@ Download [JSUT](https://sites.google.com/site/shinnosuketakamichi/publication/js
 ### 2. Train
 ```bash
 python -m scripts.cv2.train --config configs/train/jsutjvs.yaml
+```
+
+## Citation
+If you use UtterTune in your research, please cite the [paper](https://www.arxiv.org/abs/2508.09767):
+```
+@misc{Kato2025UtterTune,
+  title={UtterTune: UtterTune: LoRA-Based Target-Language Pronunciation Edit and Control in Multilingual Text-to-Speech},
+  author={Kato, Shuhei},
+  year={2025},
+  howpublished={arXiv:2508.09767 [cs.CL]},
+}
 ```
