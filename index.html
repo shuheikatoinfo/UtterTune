@@ -72,6 +72,7 @@
         <nav class="hidden md:flex items-center gap-6 text-sm">
           <a href="#features" class="hover:text-cyan-500">Features</a>
           <a href="#demos" class="hover:text-cyan-500">Demos</a>
+          <a href="#live" class="hover:text-cyan-500">Try it live</a>
           <a href="#citation" class="hover:text-cyan-500">Citation</a>
           <a href="#faq" class="hover:text-cyan-500">FAQ</a>
         </nav>
@@ -360,11 +361,82 @@
     </script>
   </section>
 
+  <!-- LIVE DEMO -->
+  <section id="live" class="mx-auto max-w-7xl px-6 py-8">
+    <h2 class="text-2xl sm:text-3xl font-bold">🎙️ Try it live</h2>
+    <p class="mt-3 text-slate-600 dark:text-slate-300">
+      Synthesize your own text on <a class="link text-cyan-500" href="https://huggingface.co/spaces/shuheikatoinfo/UtterTune-demo" target="_blank">a free ZeroGPU Space</a>.
+      Tag words with <code class="px-1 bg-slate-100 dark:bg-slate-900 rounded">&lt;PHON_START&gt;</code>/<code class="px-1 bg-slate-100 dark:bg-slate-900 rounded">&lt;PHON_END&gt;</code> to control pronunciation.
+      Only the sample prompt speakers above can be used (no arbitrary reference-audio upload), to keep this public endpoint from being usable for general-purpose voice cloning.
+      First request after idle may take up to ~1 minute while the Space wakes up / a GPU is allocated.
+    </p>
+
+    <div class="mt-6 rounded-2xl border p-6 dark:border-slate-800/80">
+      <label class="block text-sm font-medium">Text</label>
+      <textarea id="liveText" rows="2" maxlength="200" class="mt-1 w-full rounded-lg border p-2 bg-white dark:bg-slate-900 dark:border-slate-700" placeholder="&lt;PHON_START&gt;チ'ミ/モーリョー&lt;PHON_END&gt;が&lt;PHON_START&gt;バ'ッコ&lt;PHON_END&gt;する。"></textarea>
+
+      <label class="block mt-3 text-sm font-medium">Prompt speaker</label>
+      <select id="livePrompt" class="mt-1 rounded-lg border p-2 bg-white dark:bg-slate-900 dark:border-slate-700">
+        <option value="common_voice_ja_41758953">common_voice_ja_41758953</option>
+        <option value="common_voice_ja_36360364">common_voice_ja_36360364</option>
+        <option value="common_voice_ja_41776640">common_voice_ja_41776640</option>
+      </select>
+
+      <div class="mt-4">
+        <button id="liveBtn" class="rounded-lg bg-cyan-500 text-black px-4 py-2 text-sm font-medium hover:bg-cyan-600 transition">Synthesize</button>
+        <span id="liveStatus" class="ml-3 text-sm text-slate-500"></span>
+      </div>
+
+      <audio id="liveAudio" controls class="mt-4 w-full hidden"></audio>
+    </div>
+
+    <script type="module">
+      const SPACE_ID = "shuheikatoinfo/UtterTune-demo";
+      // Point this at a local Gradio dev server (e.g. "http://localhost:7860")
+      // instead of SPACE_ID to test against a locally running app.py.
+      const CLIENT_TARGET = SPACE_ID;
+
+      const btn = document.getElementById("liveBtn");
+      const status = document.getElementById("liveStatus");
+      const audioEl = document.getElementById("liveAudio");
+
+      btn.addEventListener("click", async () => {
+        const text = document.getElementById("liveText").value.trim();
+        const promptId = document.getElementById("livePrompt").value;
+        if (!text) {
+          status.textContent = "Enter some text first.";
+          return;
+        }
+
+        btn.disabled = true;
+        status.textContent = "Synthesizing… (first request may take ~1 min)";
+        audioEl.classList.add("hidden");
+
+        try {
+          const { Client } = await import("https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js");
+          const client = await Client.connect(CLIENT_TARGET);
+          const result = await client.predict("/synthesize", { text, prompt_id: promptId });
+          const audioData = result.data[0];
+          const url = audioData?.url || audioData?.path || audioData;
+          audioEl.src = url;
+          audioEl.classList.remove("hidden");
+          audioEl.play().catch(() => {});
+          status.textContent = "";
+        } catch (err) {
+          console.error(err);
+          status.textContent = "Failed to synthesize (Space may be starting up — try again in a moment).";
+        } finally {
+          btn.disabled = false;
+        }
+      });
+    </script>
+  </section>
+
   <!-- CITATION -->
   <section id="citation" class="bg-slate-50 dark:bg-slate-900/40 py-8">
     <div class="mx-auto max-w-7xl px-6">
       <h2 class="text-2xl sm:text-3xl font-bold">Citation</h2>
-      <p class="mt-3 text-slate-600 dark:text-slate-300">If you use UtterTune in your research, please cite the <span class="text-cyan-500"><a href="https://www.arxiv.org/abs/2508.09767">paper</a></span></p>
+      <p class="mt-3 text-slate-600 dark:text-slate-300">If you use UtterTune in your research, please cite the <span class="text-cyan-500"><a href="https://www.arxiv.org/abs/2508.09767">paper</a></span>:</p>
       <pre class="mt-4 rounded-xl bg-slate-100 dark:bg-slate-900 p-4 text-xs overflow-x-auto">@misc{Kato2025UtterTune,
   title={UtterTune: LoRA-Based Target-Language Pronunciation Edit and Control in Multilingual Text-to-Speech},
   author={Kato, Shuhei},
@@ -397,6 +469,10 @@
       <details class="rounded-2xl border p-6 dark:border-slate-800/80">
         <summary class="font-semibold cursor-pointer">How to replicate evaluations?</summary>
         <p class="mt-3 text-slate-600 dark:text-slate-300">Yes. The eval-audio-generation, CER, speaker-similarity, UTMOSv2, and significance-test scripts used to produce Table 1 are published in the <a class="link text-cyan-500" href="https://github.com/shuheikatoinfo/UtterTune/tree/main/scripts/eval" target="_blank">GitHub repository</a>, along with the training manifest and evaluation sentence sets.</p>
+      </details>
+      <details class="rounded-2xl border p-6 dark:border-slate-800/80">
+        <summary class="font-semibold cursor-pointer">Why can't I upload my own reference audio in the live demo?</summary>
+        <p class="mt-3 text-slate-600 dark:text-slate-300">The live demo is a public, free endpoint, so we intentionally limit it to a fixed set of sample prompt speakers rather than allowing arbitrary voice cloning. If you want to use your own reference audio, run <a class="link text-cyan-500" href="https://github.com/shuheikatoinfo/UtterTune" target="_blank">the code locally</a> with <code class="px-1 bg-slate-100 dark:bg-slate-900 rounded">scripts/cv2/infer.py</code>, which has no such restriction.</p>
       </details>
     </div>
   </section>
