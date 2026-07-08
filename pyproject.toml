@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "uttertune"
+version = "0.1.0"
+description = "LoRA-based phoneme-level pronunciation and prosody control for LLM-based TTS with no G2P"
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [{ name = "Shuhei Kato", email = "shuhei@shuheikato.info" }]
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dynamic = ["dependencies", "optional-dependencies"]
+
+# Core deps (`requirements.txt`) are backbone-agnostic: LoRA/HF plumbing
+# (`peft`, `transformers`) needed regardless of which TTS backbone
+# `scripts/<backbone>/` targets.
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }
+
+# UtterTune targets multiple LLM-TTS backbones over time, each living in its
+# own `scripts/<backbone>/` directory. `eval` is backbone-agnostic
+# (CER/speaker-similarity/UTMOSv2/stats) and applies to any backbone's
+# Table-1-style evaluation — install it alongside whichever backbone extra
+# you need.
+[tool.setuptools.dynamic.optional-dependencies]
+eval = { file = ["requirements-eval.txt"] }
+# cv2 (CosyVoice 2, arXiv:2508.09767 — current, only implemented backbone):
+# no separate extra needed today. `scripts/cv2/*` only needs the core deps
+# above (`peft`, `transformers`) plus CosyVoice 2 itself, which is set up
+# separately per README.md's own pip step against
+# `submodules/CosyVoice/requirements.txt` (that submodule's requirements
+# aren't vendored/mirrored here). Add a `cv2 = { file = [...] }` extra above
+# only if `scripts/cv2/*` ever needs a dependency beyond those two paths.
+#
+# Additional backbones are planned but not yet implemented. When work
+# starts on one, add its `scripts/<name>/` directory plus a matching extra
+# here, e.g.:
+# <name> = { file = ["requirements-<name>.txt"] }
+
+[tool.setuptools.packages.find]
+include = ["scripts*"]

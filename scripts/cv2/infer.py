@@ -2,7 +2,7 @@
 """
 CosyVoice 2 + LoRA inference script
 =================================
-Load a prerained LoRA adapter and synthesize speech from any text list.
+Load a pretrained LoRA adapter and synthesize speech from any text list.
 
 Usage:
     python -m scripts.cv2.infer \
@@ -20,7 +20,6 @@ import time
 import warnings
 from logging import getLogger, StreamHandler, INFO
 from pathlib import Path
-from typing import List
 
 import huggingface_hub
 import numpy as np
@@ -47,7 +46,7 @@ logger.addHandler(handler)
 logger.propagate = False
 
 
-def load_wav(path: Path, sr_out: int) -> np.ndarray:
+def load_wav(path: Path, sr_out: int) -> torch.Tensor:
     wav, sr = torchaudio.load(path)
 
     if sr != sr_out:
@@ -56,18 +55,78 @@ def load_wav(path: Path, sr_out: int) -> np.ndarray:
     return wav
 
 
-def trim_wav(wav: torch.Tensor, sr: int, trigger_level: float = 7.0) -> torch.Tensor:
+def trim_wav(
+    wav: torch.Tensor, sr: int, *, trigger_level: float = 7.0, allowed_gap: float = 0.25
+) -> torch.Tensor:
     # Cut the beginning of the audio signal with VAD
-    trimmed = torchaudio.functional.vad(wav, sr, trigger_level=trigger_level)
+    trimmed = torchaudio.functional.vad(
+        wav, sr, trigger_level=trigger_level, allowed_gap=allowed_gap
+    )
 
     # Cut the end of the voice signal (reverse and VAD again)
     if trimmed.shape[-1] > 0:
         trimmed_rev = torchaudio.functional.vad(
-            trimmed.flip(-1), sr, trigger_level=trigger_level
+            trimmed.flip(-1), sr, trigger_level=trigger_level, allowed_gap=allowed_gap
         )
         trimmed = trimmed_rev.flip(-1)
 
     return trimmed
+
+
+def save_wav(path, wav: torch.Tensor, sr: int) -> None:
+    """Save a synthesized/prompt waveform as 16-bit PCM wav."""
+    torchaudio.save(str(path), wav, sr, format="wav", encoding="PCM_S")
+
+
+def load_lora_adapter(cv2: "CosyVoice2", base_model_dir: str, lora_dir: Path, device: torch.device):
+    """Attach a PEFT LoRA adapter (+ new special tokens) to `cv2.model.llm`.
+
+    Mutates `cv2` in place: replaces `cv2.model.llm` with the PEFT-wrapped
+    model and returns the tokenizer with `<PHON_START>`/`<PHON_END>` added
+    as special tokens (callers that need the tokenizer on the frontend
+    should assign it to `cv2.frontend.tokenizer`).
+    """
+    base_model = cv2.model.llm
+
+    # Expand vocabulary
+    tok = get_qwen_tokenizer(
+        token_path=f"{base_model_dir}/CosyVoice-BlankEN", skip_special_tokens=True
+    )
+
+    # Register new special tokens
+    new_tokens = ["<PHON_START>", "<PHON_END>"]
+    added = tok.tokenizer.add_special_tokens(
+        {"additional_special_tokens": new_tokens}
+    )
+    logger.info("Number of tokens added: %s", added)
+
+    # Update the meta information on the QwenTokenizer
+    tok.special_tokens["additional_special_tokens"].extend(
+        [t for t in new_tokens if t not in tok.special_tokens["additional_special_tokens"]]
+    )
+    base_model.llm.model.resize_token_embeddings(len(tok.tokenizer))
+    new_ids = tok.tokenizer.convert_tokens_to_ids(new_tokens)
+
+    # Attach LoRA
+    logger.info("Loading LoRA from %s", lora_dir)
+
+    hf_model = PeftModel.from_pretrained(
+        base_model,
+        lora_dir,
+        is_trainable=False,
+        torch_dtype=torch.float32,
+    )
+    hf_model.to(device).eval()
+
+    # Load embeddings of the new tokens
+    embed_patch = Path(lora_dir) / "embed_patch.safetensors"
+    if embed_patch.exists():
+        rows = st.load_file(str(embed_patch))["embed_rows"].to(device)
+        with torch.no_grad():
+            hf_model.base_model.llm.model.get_input_embeddings().weight[new_ids] = rows
+
+    cv2.model.llm = hf_model
+    return tok
 
 
 def main():
@@ -121,63 +180,14 @@ def main():
     cv2 = CosyVoice2(model_dir=args.base_model, fp16=False)
 
     if args.lora_dir is not None:
-        base_model = cv2.model.llm
-
-        # Expand vocabulary
-        tok = get_qwen_tokenizer(
-            token_path=f"{args.base_model}/CosyVoice-BlankEN", skip_special_tokens=True
-        )
-
-        # Register new special tokens
-        new_tokens = ["<PHON_START>", "<PHON_END>"]
-        added = tok.tokenizer.add_special_tokens(
-            {"additional_special_tokens": new_tokens}
-        )
-        logger.info("Number of tokens added: %s", added)
-
-        # Update the meta information on the QwenTokenizer
-        tok.special_tokens["additional_special_tokens"].extend(
-            [
-                t
-                for t in new_tokens
-                if t not in tok.special_tokens["additional_special_tokens"]
-            ]
-        )
-        base_model.llm.model.resize_token_embeddings(len(tok.tokenizer))
-        new_ids = tok.tokenizer.convert_tokens_to_ids(new_tokens)
-        w = cv2.model.llm.llm.model.model.embed_tokens.weight
-
-        # Attach LoRA
-        logger.info("Loading LoRA from %s", args.lora_dir)
-
-        # Load LoRA weights
-        hf_model = PeftModel.from_pretrained(
-            base_model,
-            args.lora_dir,
-            is_trainable=False,
-            torch_dtype=torch.float32,
-        )
-        hf_model.to(device).eval()
-
-        # Load embeddings of the new tokens
-        rows = st.load_file(args.lora_dir / "embed_patch.safetensors")["embed_rows"].to(
-            device
-        )
-
-        with torch.no_grad():
-            hf_model.base_model.llm.model.get_input_embeddings().weight[new_ids] = rows
-
-        cv2.model.llm = hf_model
-        w = cv2.model.llm.llm.model.model.embed_tokens.weight
-        print(w[new_ids])
-        print(f"new ids: {new_ids}")
+        load_lora_adapter(cv2, args.base_model, args.lora_dir, device)
 
     # I/O
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
     if Path(args.texts).is_file():
-        sentences: List[str] = [
+        sentences: list[str] = [
             ln.strip()
             for ln in Path(args.texts).read_text("utf-8").splitlines()
             if ln.strip()
@@ -212,9 +222,7 @@ def main():
 
         # Save synthesized file
         out_path = out_dir / f"{idx + 1:03d}.wav"
-        torchaudio.save(
-            str(out_path), trimmed, cv2.sample_rate, format="wav", encoding="PCM_S"
-        )
+        save_wav(out_path, trimmed, cv2.sample_rate)
         logger.info(
             f"    saved → {out_path}  ({dt:.2f}s, {trimmed.shape[-1] / cv2.sample_rate:.2f}s)"
         )
@@ -228,13 +236,7 @@ def main():
 
                 if trimmed.shape[-1] > 0:
                     out_path_trimmed = out_path.with_name(f"{idx + 1:03d}_trimmed.wav")
-                    torchaudio.save(
-                        str(out_path_trimmed),
-                        trimmed,
-                        cv2.sample_rate,
-                        format="wav",
-                        encoding="PCM_S",
-                    )
+                    save_wav(out_path_trimmed, trimmed, cv2.sample_rate)
                     logger.info(
                         f"    saved → {out_path_trimmed}  ({dt:.2f}s, {trimmed.shape[-1] / cv2.sample_rate:.2f}s)"
                     )

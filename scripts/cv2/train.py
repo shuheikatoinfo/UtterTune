@@ -18,7 +18,6 @@ import argparse
 import random
 from logging import getLogger, StreamHandler, INFO
 from pathlib import Path
-from typing import List, Tuple
 
 import huggingface_hub
 import numpy as np
@@ -73,7 +72,7 @@ class TSVSpeechDataset(Dataset):
     """Reads 4-column TSV and returns (text, speech_ids)"""
 
     def __init__(self, tsv_path: str):
-        self.rows: List[Tuple[str, torch.Tensor]] = []
+        self.rows: list[tuple[str, torch.Tensor, str]] = []
         for ln in Path(tsv_path).read_text(encoding="utf-8").splitlines():
             _, txt, npy, wav = ln.split("\t")
             ids = torch.from_numpy(np.load(npy)).long()  # (T,)
@@ -201,9 +200,9 @@ def main():
     def mask_grad(grad):
         if not hasattr(mask_grad, "done"):
             logger.debug("=== GradDebug (hook) ===")
-            logger.debug("grad.shape :", tuple(grad.shape))
-            logger.debug("new_tok_grad :", grad[new_ids])
-            logger.debug("old_tok_grad(sample):", grad[0][:4], "...")
+            logger.debug("grad.shape : %s", tuple(grad.shape))
+            logger.debug("new_tok_grad : %s", grad[new_ids])
+            logger.debug("old_tok_grad(sample): %s ...", grad[0][:4])
             mask_grad.done = True
         grad[existing_mask] = 0
         return grad
