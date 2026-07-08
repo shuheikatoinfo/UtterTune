@@ -375,6 +375,11 @@
       <label class="block text-sm font-medium">Text</label>
       <textarea id="liveText" rows="2" maxlength="200" class="mt-1 w-full rounded-lg border p-2 bg-white dark:bg-slate-900 dark:border-slate-700" placeholder="&lt;PHON_START&gt;チ'ミ/モーリョー&lt;PHON_END&gt;が&lt;PHON_START&gt;バ'ッコ&lt;PHON_END&gt;する。"></textarea>
 
+      <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">
+        Example (click to use):
+        <code id="liveExample" role="button" tabindex="0" title="Click to fill the box above" class="cursor-pointer select-all inline-block px-1.5 py-0.5 bg-slate-100 dark:bg-slate-900 rounded hover:bg-slate-200 dark:hover:bg-slate-800 transition">&lt;PHON_START&gt;チ'ミ/モーリョー&lt;PHON_END&gt;が&lt;PHON_START&gt;バ'ッコ&lt;PHON_END&gt;する。</code>
+      </p>
+
       <label class="block mt-3 text-sm font-medium">Prompt speaker</label>
       <select id="livePrompt" class="mt-1 rounded-lg border p-2 bg-white dark:bg-slate-900 dark:border-slate-700">
         <option value="common_voice_ja_41758953">common_voice_ja_41758953</option>
@@ -399,6 +404,15 @@
       const btn = document.getElementById("liveBtn");
       const status = document.getElementById("liveStatus");
       const audioEl = document.getElementById("liveAudio");
+      const textEl = document.getElementById("liveText");
+
+      // Click (or Enter/Space) the example to drop it into the text box.
+      const exampleEl = document.getElementById("liveExample");
+      const useExample = () => { textEl.value = exampleEl.innerText; textEl.focus(); };
+      exampleEl.addEventListener("click", useExample);
+      exampleEl.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); useExample(); }
+      });
 
       btn.addEventListener("click", async () => {
         const text = document.getElementById("liveText").value.trim();
