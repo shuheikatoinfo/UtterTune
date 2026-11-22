@@ -8,6 +8,8 @@
 [![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97-HuggingFace-yellow)](https://huggingface.co/shuheikatoinfo/UtterTune-CosyVoice2-ja-JSUTJVS)
 [![Static Demo](https://img.shields.io/badge/Demo-GitHub%20Pages-blue)](https://shuheikatoinfo.github.io/UtterTune)
 
+**New:** [UtterTune-SelfDistill](https://github.com/shuheikatoinfo/UtterTune-SelfDistill) では、録音なしで UtterTune のタグを 4 つの TTS（Sarashina2.2-TTS、CosyVoice 2、Irodori-TTS、T5Gemma-TTS）で利用可能です（[arXiv:2609.17234](https://arxiv.org/abs/2609.17234)）。
+
 <!-- [![Interactive Demo](https://img.shields.io/badge/Demo-Gradio-orange)](https://gradio.app/g/your-username/UtterTune) -->
 
 ## 📜 背景
